@@ -1,0 +1,27 @@
+name: Build RTSan Libs
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Clone
+      run: make clone && make checkout
+
+    - name: Configure
+      run: make configure
+
+    - name: Build
+      run: make build

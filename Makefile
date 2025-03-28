@@ -1,6 +1,3 @@
-# Makefile
-# Purpose: Clone, checkout, configure, and build LLVM's rtsan runtime
-
 LLVM_PROJECT_DIR := llvm-project
 BUILD_DIR := $(LLVM_PROJECT_DIR)/build
 TARGET_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
@@ -13,8 +10,7 @@ all: init checkout configure build show-lib
 
 clone:
 	if [ ! -d "$(LLVM_PROJECT_DIR)" ]; then \
-		git clone -n --depth=1 --filter=tree:0 \
-			--branch llvmorg-20.1.0 \
+		git clone --branch llvmorg-20.1.0 \
 			https://github.com/llvm/llvm-project.git \
 			$(LLVM_PROJECT_DIR); \
 	fi
@@ -32,7 +28,6 @@ configure:
 		-DBUILD_SHARED_LIBS=OFF \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCOMPILER_RT_BUILD_SANITIZERS=ON \
-		-DLLVM_TARGETS_TO_BUILD="Native" \
 		../compiler-rt
 
 build:
