@@ -1,26 +1,37 @@
+LLVM_VERSION := 20.1.1
 LLVM_PROJECT_DIR := llvm-project
+LLVM_PROJECT_TAR := llvm-project-$(LLVM_VERSION).src.tar.xz
+LLVM_PROJECT_URL := https://github.com/llvm/llvm-project/releases/download/llvmorg-$(LLVM_VERSION)/$(LLVM_PROJECT_TAR)
+
 BUILD_DIR := $(LLVM_PROJECT_DIR)/build
 TARGET_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 TARGET_ARCH := $(shell uname -m)
 NUM_CORES := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu)
 
-.PHONY: all clone init checkout configure build show-lib clean
+.PHONY: all download extract init configure build clean show-lib
 
-all: init checkout configure build show-lib
+all: init configure build show-lib
 
-clone:
-	if [ ! -d "$(LLVM_PROJECT_DIR)" ]; then \
-		git clone --branch llvmorg-20.1.0 \
-			https://github.com/llvm/llvm-project.git \
-			$(LLVM_PROJECT_DIR); \
+download:
+	if [ ! -f "$(COMPILER_RT_TAR)" ]; then \
+		curl -LO $(COMPILER_RT_URL); \
+		curl -LO $(CMAKE_URL); \
 	fi
 
-init: clone
-	git -C $(LLVM_PROJECT_DIR) sparse-checkout init --no-cone
-	git -C $(LLVM_PROJECT_DIR) sparse-checkout set compiler-rt cmake
+download:
+	if [ ! -f "$(LLVM_PROJECT_TAR)" ]; then \
+		curl -LO $(LLVM_PROJECT_URL); \
+	fi
 
-checkout:
-	git -C $(LLVM_PROJECT_DIR) checkout
+extract: download
+	if [ ! -d "$(LLVM_PROJECT_DIR)/.extracted" ]; then \
+		mkdir -p $(LLVM_PROJECT_DIR) && \
+		tar -xf $(LLVM_PROJECT_TAR) --strip-components=1 -C $(LLVM_PROJECT_DIR); \
+		touch $(LLVM_PROJECT_DIR)/.extracted; \
+	fi
+
+init: extract
+	@echo "LLVM project extracted to $(LLVM_PROJECT_DIR)"
 
 configure:
 	@mkdir -p $(BUILD_DIR)
