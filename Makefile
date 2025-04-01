@@ -13,12 +13,6 @@ NUM_CORES := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu)
 all: init configure build show-lib
 
 download:
-	if [ ! -f "$(COMPILER_RT_TAR)" ]; then \
-		curl -LO $(COMPILER_RT_URL); \
-		curl -LO $(CMAKE_URL); \
-	fi
-
-download:
 	if [ ! -f "$(LLVM_PROJECT_TAR)" ]; then \
 		curl -LO $(LLVM_PROJECT_URL); \
 	fi

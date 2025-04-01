@@ -17,8 +17,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Clone
-      run: make clone && make checkout
+    - name: Download and Extract
+      run: make init
 
     - name: Configure
       run: make configure
