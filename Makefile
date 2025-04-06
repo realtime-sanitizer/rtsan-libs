@@ -44,7 +44,7 @@ clean:
 test:
 	@echo "Running tests for $(TARGET_OS)..."
 ifeq ($(TARGET_OS),linux)
-	LIB=$(BUILD_DIR)/lib/darwin/libclang_rt.rtsan-$(TARGET_ARCH).a bash ./test_common.sh
+	LIB=$(BUILD_DIR)/lib/linux/libclang_rt.rtsan-$(TARGET_ARCH).a bash ./test_common.sh
 else
 	LIB=$(BUILD_DIR)/lib/darwin/libclang_rt.rtsan_osx_dynamic.dylib bash ./test_common.sh
 	LIB=$(BUILD_DIR)/lib/darwin/libclang_rt.rtsan_osx_dynamic.dylib bash ./test_darwin.sh
