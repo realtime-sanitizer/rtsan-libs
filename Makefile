@@ -8,9 +8,9 @@ TARGET_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 TARGET_ARCH := $(shell uname -m)
 NUM_CORES := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu)
 
-.PHONY: all download extract init configure build clean show-lib
+.PHONY: all download extract init configure build clean test
 
-all: init configure build show-lib
+all: init configure build
 
 download:
 	if [ ! -f "$(LLVM_PROJECT_TAR)" ]; then \
@@ -41,10 +41,11 @@ build:
 clean:
 	rm -rf $(BUILD_DIR)
 
-show-lib:
-	@echo "Built library:"
+test:
+	@echo "Running tests for $(TARGET_OS)..."
 ifeq ($(TARGET_OS),linux)
-	@echo "$(BUILD_DIR)/lib/linux/libclang_rt.rtsan-$(TARGET_ARCH).a"
+	LIB=$(BUILD_DIR)/lib/linux/libclang_rt.rtsan-$(TARGET_ARCH).a bash ./test_common.sh
 else
-	@echo "$(BUILD_DIR)/lib/darwin/libclang_rt.rtsan_osx_dynamic.dylib"
+	LIB=$(BUILD_DIR)/lib/darwin/libclang_rt.rtsan_osx_dynamic.dylib bash ./test_common.sh
+	LIB=$(BUILD_DIR)/lib/darwin/libclang_rt.rtsan_osx_dynamic.dylib bash ./test_darwin.sh
 endif
