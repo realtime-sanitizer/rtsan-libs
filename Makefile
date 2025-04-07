@@ -40,6 +40,8 @@ build:
 
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -rf $(LLVM_PROJECT_DIR)
+	rm llvm-project-$(LLVM_VERSION).src.tar.xz
 
 test:
 	@echo "Running tests for $(TARGET_OS)..."
