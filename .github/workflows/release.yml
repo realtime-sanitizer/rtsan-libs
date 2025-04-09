@@ -1,0 +1,68 @@
+name: Build RTSan Libs
+
+on:
+  push:
+    tags: ["v*"]
+
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download and Extract
+      run: make init
+
+    - name: Configure
+      run: make configure
+
+    - name: Build
+      run: make build
+
+    - name: Test
+      run: make test
+
+    - name: Upload artifact Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ubuntu_artifacts_rtsan
+        path: ./llvm-project/build/lib/linux/libclang_rt.rtsan-*.a
+        retention-days: 1
+
+    - name: Upload artifact Darwin
+      if: matrix.os == 'macos-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: darwin_artifacts_rtsan
+        path: ./llvm-project/build/lib/darwin/libclang_rt.rtsan*.dylib
+        retention-days: 1
+
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download darwin output
+        uses: actions/download-artifact@v4
+        with:
+          name: darwin_artifacts_rtsan
+      - name: Download ubuntu output
+        uses: actions/download-artifact@v4
+        with:
+          name: ubuntu_artifacts_rtsan
+      - name: List files (debug)
+        run: ls -al
+      - name: Create release
+        uses: AButler/upload-release-assets@v3.0
+        with:
+          release-tag: ${{ github.ref_name }}
+          files: ./libclang_rt.rtsan*
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
