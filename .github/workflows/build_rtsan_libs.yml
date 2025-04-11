@@ -28,19 +28,3 @@ jobs:
 
     - name: Test
       run: make test
-
-    - name: Upload artifact Ubuntu
-      if: matrix.os == 'ubuntu-latest'
-      uses: actions/upload-artifact@v4
-      with:
-        name: ubuntu_artifacts_rtsan
-        path: ./llvm-project/build/lib/linux/libclang_rt.rtsan-*.a
-        retention-days: 1
-
-    - name: Upload artifact Darwin
-      if: matrix.os == 'macos-latest'
-      uses: actions/upload-artifact@v4
-      with:
-        name: darwin_artifacts_rtsan
-        path: ./llvm-project/build/lib/darwin/libclang_rt.rtsan*.dylib
-        retention-days: 1
