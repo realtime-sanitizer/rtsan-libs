@@ -27,12 +27,22 @@ jobs:
     - name: Test
       run: make test
 
+    # rename to libclang_rt.rtsan_linux_x86_64.a
+    # This makes it clear this is for linux
+    - name: Fix artifact name Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: | 
+        ARCH=$(uname -m)
+        UNAME=$(uname -s | tr '[:upper:]' '[:lower:]')
+        mv ./llvm-project/build/lib/linux/libclang_rt.rtsan-${ARCH}.a ./llvm-project/build/lib/linux/libclang_rt.rtsan_${UNAME}_${ARCH}.a
+
     - name: Upload artifact Ubuntu
       if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v4
       with:
         name: ubuntu_artifacts_rtsan
-        path: ./llvm-project/build/lib/linux/libclang_rt.rtsan-*.a
+        path: ./llvm-project/build/lib/linux/libclang_rt.rtsan*.a
         retention-days: 1
 
     - name: Upload artifact Darwin
