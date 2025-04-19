@@ -1,4 +1,4 @@
-name: Build RTSan Libs
+name: Build and upload libraries to release
 
 on:
   push:
